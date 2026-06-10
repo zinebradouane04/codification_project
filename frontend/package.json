@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "https://zinebradouane04.github.io/codification_project",
   "dependencies": {
-    "docx": "^9.7.1",
+    "docx": "^7.8.2",
     "exceljs": "^4.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -24,5 +24,8 @@
     "development": [
       "last 1 chrome version"
     ]
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-classes": "^7.29.7"
   }
 }
