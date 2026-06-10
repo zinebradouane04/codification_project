@@ -18,5 +18,15 @@
     "version": 0,
     "motif": "Création",
     "createdAt": "2026-06-10T11:56:50.895Z"
+  },
+  {
+    "id": "mq8onyy2dd7p",
+    "code": "PR-MID-03",
+    "intitule": "Maîtrise des informations documentées",
+    "type": "PR",
+    "seq": 3,
+    "version": 0,
+    "motif": "Création",
+    "createdAt": "2026-06-10T23:11:49.420Z"
   }
 ]
