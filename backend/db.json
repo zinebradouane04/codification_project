@@ -1,0 +1,22 @@
+[
+  {
+    "id": "mq7xk3a4cmzx",
+    "code": "PR-VR-01",
+    "intitule": "Veille réglementaire",
+    "type": "PR",
+    "seq": 1,
+    "version": 0,
+    "motif": "Création",
+    "createdAt": "2026-06-10T10:32:58.780Z"
+  },
+  {
+    "id": "mq80jy32v6ah",
+    "code": "PR-MID-02",
+    "intitule": "Maîtrise des informations documentées",
+    "type": "PR",
+    "seq": 2,
+    "version": 0,
+    "motif": "Création",
+    "createdAt": "2026-06-10T11:56:50.895Z"
+  }
+]
