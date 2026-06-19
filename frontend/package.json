@@ -14,7 +14,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "build": "react-scripts build",
+      "predeploy": "npm run build",
+  "deploy": "gh-pages -d build"
   },
   "browserslist": {
     "production": [
@@ -26,6 +28,7 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-transform-classes": "^7.29.7"
+    "@babel/plugin-transform-classes": "^7.29.7",
+    "gh-pages": "^6.3.0"
   }
 }
