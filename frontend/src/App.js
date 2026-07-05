@@ -486,56 +486,106 @@ function orderedTypeCodes(codes) {
 function pluralLabel(typeCode,group){return TYPE_LABELS_PLURAL[typeCode]||(group[0]&&group[0].typeLabel)||typeCode;}
 
 /* =========================================================================
-   EXPORT EXCEL (inchangé)
+   EXPORT EXCEL — style aligné sur le modèle MID (ENG-LID-01)
    ========================================================================= */
-const NAVY="FF1F3864";const LIGHT="FFD9E1F2";const XFONT="Times New Roman";
+const XFONT = "Times New Roman";
+const HEADER_FILL = "FFED7D31";   // orange (en-tête de tableau)
+const HEADER_FONT = "FFFFFFFF";   // texte blanc sur l'en-tête
+
+// Une couleur claire par famille de type, pour repérer visuellement les groupes
+const GROUP_FILLS = {
+  PS:  "FFFCE4D6", // orange clair
+  PR:  "FFDDEBF7", // bleu clair
+  ENG: "FFE2EFDA", // vert clair
+  F:   "FFFFF2CC", // jaune clair
+  L:   "FFEAD1DC", // rose clair
+  INS: "FFD9D2E9", // violet clair
+  MO:  "FFD0E0E3", // bleu-vert clair
+};
+const groupFill = (t) => GROUP_FILLS[t] || "FFF2F2F2";
 
 async function exportExcel(codes, branding={}) {
   const company=(branding.company||"OCG CONSULTING").trim();
   const wb=new ExcelJS.Workbook();wb.creator=`${company} — DocCode Generator`;
-  const ws=wb.addWorksheet("Informations documentées",{views:[{state:"frozen",ySplit:5}],pageSetup:{orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0}});
-  ws.columns=[{width:22},{width:50},{width:18},{width:10},{width:13},{width:24}];
+  const ws=wb.addWorksheet("Informations documentées",{views:[{state:"frozen",ySplit:8}],pageSetup:{orientation:"portrait",fitToPage:true,fitToWidth:1,fitToHeight:0}});
+
+  // Largeurs alignées sur le modèle MID
+  ws.columns=[{width:20.7},{width:77.9},{width:18.7},{width:11.6},{width:11.3},{width:20.4}];
   const thin={style:"thin",color:{argb:"FFBFBFBF"}};const border={top:thin,left:thin,bottom:thin,right:thin};
-  ws.mergeCells("A1:B3");const logo=ws.getCell("A1");
-  ws.getRow(1).height=22;ws.getRow(2).height=22;ws.getRow(3).height=22;
+
+  // Bloc logo (A1:A3), sans fond coloré — sobre comme le modèle
+  ws.mergeCells("A1:A3");const logo=ws.getCell("A1");
+  ws.getRow(1).height=15;ws.getRow(2).height=15;ws.getRow(3).height=15.75;
   if(branding.logo&&dataUrlToBase64(branding.logo)){
     const imgId=wb.addImage({base64:branding.logo,extension:"png"});
-    const{width,height}=scaleDims(branding.logoW,branding.logoH,150,56);
-    logo.value="";logo.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FFFFFFFF"}};
+    const{width,height}=scaleDims(branding.logoW,branding.logoH,140,50);
     ws.addImage(imgId,{tl:{col:0.15,row:0.15},ext:{width,height},editAs:"oneCell"});
   }else{
-    logo.value=company.toUpperCase();logo.font={name:XFONT,bold:true,size:13,color:{argb:"FFFFFFFF"}};
-    logo.fill={type:"pattern",pattern:"solid",fgColor:{argb:NAVY}};
+    logo.value=company.toUpperCase();logo.font={name:XFONT,bold:true,size:11};
+    logo.alignment={horizontal:"center",vertical:"middle",wrapText:true};
   }
-  logo.alignment={horizontal:"center",vertical:"middle",wrapText:true};
-  ws.mergeCells("C1:D3");const titre=ws.getCell("C1");
-  titre.value={richText:[{text:"Liste des Informations Documentées",font:{name:XFONT,bold:true,size:13,color:{argb:NAVY}}},{text:"\n"+company,font:{name:XFONT,italic:true,size:10,color:{argb:"FF555555"}}}]};
+
+  // Titre (B1:C3)
+  ws.mergeCells("B1:C3");const titre=ws.getCell("B1");
+  titre.value="Liste des Informations documentées";
+  titre.font={name:XFONT,bold:true,size:18};
   titre.alignment={horizontal:"center",vertical:"middle",wrapText:true};
-  ws.mergeCells("E1:F1");ws.getCell("E1").value="Code : ENG-LID-01";
-  ws.mergeCells("E2:F2");ws.getCell("E2").value="Version : 00";
-  ws.mergeCells("E3:F3");ws.getCell("E3").value="Date : "+new Date().toLocaleDateString("fr-FR");
-  ["E1","E2","E3"].forEach(c=>{ws.getCell(c).font={name:XFONT,size:10};ws.getCell(c).alignment={horizontal:"left",vertical:"middle"};});
+
+  // Bloc Code / Version / Date en haut à droite
+  ws.mergeCells("D1:F2");
+  ws.getCell("D1").value=`Code : ENG-LID-01`;
+  ws.getCell("D1").font={name:XFONT,size:12};
+  ws.getCell("D1").alignment={horizontal:"left",vertical:"center",wrapText:true};
+  ws.mergeCells("D3:F3");
+  ws.getCell("D3").value=`Version : 00   |   Date : ${new Date().toLocaleDateString("fr-FR")}`;
+  ws.getCell("D3").font={name:XFONT,size:12};
+  ws.getCell("D3").alignment={horizontal:"left",vertical:"center"};
+
   for(let r0=1;r0<=3;r0++)for(let c0=1;c0<=6;c0++)ws.getCell(r0,c0).border=border;
-  const HR=5;
+
+  // En-tête de tableau à la ligne 8 (comme le modèle)
+  const HR=8;
   const headers=["Type de document","Intitulé du document","Code","Version","Date","Motif de mise à jour"];
   const headerRow=ws.getRow(HR);
-  headers.forEach((h,i)=>{const cell=headerRow.getCell(i+1);cell.value=h;cell.font={name:XFONT,bold:true,size:11,color:{argb:"FFFFFFFF"}};cell.fill={type:"pattern",pattern:"solid",fgColor:{argb:NAVY}};cell.alignment={horizontal:"center",vertical:"middle",wrapText:true};cell.border=border;});
-  headerRow.height=26;
+  headers.forEach((h,i)=>{
+    const cell=headerRow.getCell(i+1);
+    cell.value=h;
+    cell.font={name:XFONT,bold:true,size:11,color:{argb:HEADER_FONT}};
+    cell.fill={type:"pattern",pattern:"solid",fgColor:{argb:HEADER_FILL}};
+    cell.alignment={horizontal:"center",vertical:"middle",wrapText:true};
+    cell.border=border;
+  });
+  headerRow.height=22;
+
   let r=HR+1;
   orderedTypeCodes(codes).forEach(t=>{
     const group=codes.filter(c=>c.type===t).slice().sort((a,b)=>(a.seq||0)-(b.seq||0));
     if(group.length===0)return;const start=r;
+    const fill=groupFill(t);
     group.forEach(item=>{
-      const row=ws.getRow(r);row.getCell(1).value=pluralLabel(t,group);row.getCell(2).value=item.intitule||"";row.getCell(3).value=item.code||"";row.getCell(4).value=item.version??0;row.getCell(5).value=item.createdAt?new Date(item.createdAt):new Date();row.getCell(6).value=item.motif||"Création";
-      for(let col=1;col<=6;col++){const cell=row.getCell(col);cell.border=border;cell.font={name:XFONT,size:10};cell.alignment={horizontal:"left",vertical:"middle",wrapText:true};
-        if(col===1){cell.fill={type:"pattern",pattern:"solid",fgColor:{argb:LIGHT}};cell.font={name:XFONT,size:11,bold:true,color:{argb:NAVY}};cell.alignment={horizontal:"center",vertical:"middle",wrapText:true};}
-        else if(col===3){cell.font={name:"Consolas",size:10,bold:true,color:{argb:NAVY}};cell.alignment={horizontal:"center",vertical:"middle"};}
+      const row=ws.getRow(r);
+      row.getCell(1).value=pluralLabel(t,group);
+      row.getCell(2).value=item.intitule||"";
+      row.getCell(3).value=item.code||"";
+      row.getCell(4).value=item.version??0;
+      row.getCell(5).value=item.createdAt?new Date(item.createdAt):new Date();
+      row.getCell(6).value=item.motif||"Création";
+      for(let col=1;col<=6;col++){
+        const cell=row.getCell(col);
+        cell.border=border;
+        cell.font={name:XFONT,size:11};
+        cell.fill={type:"pattern",pattern:"solid",fgColor:{argb:fill}};
+        cell.alignment={horizontal:"left",vertical:"middle",wrapText:true};
+        if(col===1){cell.font={name:XFONT,size:12,bold:true};cell.alignment={horizontal:"center",vertical:"middle",wrapText:true};}
+        else if(col===3){cell.font={name:XFONT,size:11,bold:true};cell.alignment={horizontal:"left",vertical:"middle"};}
         else if(col===4||col===6){cell.alignment={horizontal:"center",vertical:"middle"};}
         else if(col===5){cell.numFmt="dd/mm/yyyy";cell.alignment={horizontal:"center",vertical:"middle"};}
-      }r++;
+      }
+      r++;
     });
     if(r-1>start)ws.mergeCells(`A${start}:A${r-1}`);
   });
+
   const buffer=await wb.xlsx.writeBuffer();
   downloadBlob(new Blob([buffer],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),"liste-informations-documentees.xlsx");
 }
