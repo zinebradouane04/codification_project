@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/codification_project/static/js/main.5f260625.js",
+    "main.js": "/codification_project/static/js/main.471eb3e8.js",
     "static/media/logo_codoc.png": "/codification_project/static/media/logo_codoc.503b8b84246d50ca4b95.png",
     "static/media/logo_ocg.png": "/codification_project/static/media/logo_ocg.f669a77e06bc83c11f6a.png",
     "index.html": "/codification_project/index.html",
-    "main.5f260625.js.map": "/codification_project/static/js/main.5f260625.js.map"
+    "main.471eb3e8.js.map": "/codification_project/static/js/main.471eb3e8.js.map"
   },
   "entrypoints": [
-    "static/js/main.5f260625.js"
+    "static/js/main.471eb3e8.js"
   ]
 }
